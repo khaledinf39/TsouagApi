@@ -22,7 +22,7 @@ db.once('open', function() {
 });
 
 //////////////////////// midillwear////////////////////
-// app.use(express.static('public'));
+app.use(express.static('public'));
 // app.use('/stores',stores);
 app.use('/users',users);
 // app.use('/suppliers',supplier);
