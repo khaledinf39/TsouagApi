@@ -1,53 +1,48 @@
 var express = require('express');
 var router = express.Router();
 const Bodyparser=require('body-parser');
-var User=require('../model/user');
+var Product=require('../model/product');
 const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 /* GET users listing. */
 
 const JWT_word="khaled";
 
-router.post('/logup',Bodyparser.json(), function(req, res, next) {
-  const phone=req.body.phone;
-  console.log(phone);
-  User.find({phone:phone}).exec().then(result=>
+router.post('/add',Bodyparser.json(), function(req, res, next) {
+  let name=req.body.name;
+  Product.find({name:name}).exec().then(result=>
   {
     if (result.length>0){
       return res.status(404).json({
-        message:'this phone number is already existe'
+        message:'this product name is already existe'
         ,status:404
       });
     }else {
-      const pw=req.body.password;
-      const user=new User({
+      
+      const product=new Product({
         _id:mongoose.Types.ObjectId(),
-        // email:req.body.email,
-        password:pw,
-        phone:req.body.phone,
-        status:true,
-        lat:req.body.lat,
-        lng:req.body.lng,
-        FCMtoken:req.body.FCMtoken
+        name:name,
+        description:req.body.description,
+        status:1,
+        quantity:req.body.quantity,
+        quantity_sold:0
         ,storeID:req.body.storeID
+        ,categorieID:req.body.categorieID
         
       });
-      user.save().then(result=>{
-        let token=jwt.sign({
-            phone:req.body.phone,
-            password:req.body.password
-            
-          },JWT_word,null
-         //  {
-         //    expiresIn: "1000h"
-         //  }
-          );
+      
+        for(let item of req.body.prices){ 
+        product.prices.push(item);
+      }
+    
+      product.save().then(result=>{
+    
         res.status(201).json(
             {
-              message:'user created with successfully',
+              message:'product created with successfully',
               status:201,
-              user:result,
-              token:token
+              product:result,
+             
             }
         )
       }).catch(err=>{
@@ -57,39 +52,7 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
         });
       }) ;
 
-    //   bcrypt.hash(pw,10,function(err,hash){
-    //     console.log(err);
-    //     console.log(hash);
-    //     if (err){
-
-    //       return  res.status(500).json({
-
-    //         err:err,
-    //         status:5002
-    //       });
-    //     }else {
-    //       const user=new User({
-    //         _id:mongoose.Types.ObjectId(),
-    //         email:req.body.email,
-    //         password:hash
-    //       });
-    //       user.save().then(result=>{
-    //         res.status(201).json(
-    //             {
-    //               message:'user created with successfully',
-    //               status:201,
-    //               result:result
-    //             }
-    //         )
-    //       }).catch(err=>{
-    //         res.status(500).json({
-    //           err:err,
-    //           status:500
-    //         });
-    //       }) ;
-
-    //     }
-    //   });
+   
     }
 
   });
@@ -98,7 +61,7 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
 });
 
 
-router.post('/login',Bodyparser.json(), function(req, res, next) {
+router.get('/',Bodyparser.json(), function(req, res, next) {
   
     try{
       let token=jwt.sign(
