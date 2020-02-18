@@ -10,6 +10,8 @@ const userSchemma=mongoose.Schema({
     status:{type: Boolean ,required: true},
     password:{type: String ,required: true},
     image:{type: String ,required: false}
+    ,storeID:{type: String ,required: true}
+
 });
 
 module.exports=mongoose.model('User',userSchemma);

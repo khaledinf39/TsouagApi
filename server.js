@@ -10,7 +10,7 @@ const app=express();
 
 //connecting to DB
 
-const DB_atlas="mongodb+srv://khaledinf:BQFjLj2WFDl53Bh0@cluster0-wf1ig.mongodb.net/khaledDB?retryWrites=true&w=majority";
+const DB_atlas="mongodb+srv://khaledinf:BQFjLj2WFDl53Bh0@cluster0-wf1ig.mongodb.net/TsouagDB?retryWrites=true&w=majority";
 mongoose.connect(DB_atlas,{ useNewUrlParser: true });
 
 var db = mongoose.connection;
@@ -25,15 +25,15 @@ db.once('open', function() {
 app.use(express.static('public'));
 
 
-// app.use('/stores',stores);
+app.use('/stores',stores);
 app.use('/users',users);
-// app.use('/suppliers',supplier);
+app.use('/suppliers',supplier);
 
 
 
 /////// calinng////////////
-const Port=process.env.PORT || 8080;
-app.listen(Port,()=> console.log('listinng to port 8080....!'));
+// const Port=process.env.PORT || 8080;
+// app.listen(Port,()=> console.log('listinng to port 8080....!'));
 
 
 // catch 404 and forward to error handler
@@ -53,3 +53,4 @@ app.use(function(req, res, next) {
       });
     });
     
+    app.listen(process.env.PORT || 8080, () => console.log("lisiinng..."))

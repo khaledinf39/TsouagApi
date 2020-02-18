@@ -29,10 +29,11 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
         lat:req.body.lat,
         lng:req.body.lng,
         FCMtoken:req.body.FCMtoken
-        ,email:req.body.email
+        ,storeID:req.body.storeID
+        
       });
       user.save().then(result=>{
-        const token=jwt.sign({
+        let token=jwt.sign({
             phone:req.body.phone,
             password:req.body.password
             
@@ -98,13 +99,19 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
 
 
 router.post('/login',Bodyparser.json(), function(req, res, next) {
-    let token=req.body.token;
-    console.log(token);
+  
     try{
+      let token=jwt.sign(
+        {
+        phone:req.body.phone
+      ,password:req.body.phone
+    },JWT_word,null);
+    
+      console.log(token);
 
-jwt.verify(token,JWT_word);
         let phone=req.body.phone;
   console.log(phone);
+  
   User.find({phone:phone}).exec().then(users=>
   {
     if (users.length<1){
