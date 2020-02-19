@@ -4,9 +4,39 @@ const Bodyparser=require('body-parser');
 var Product=require('../model/product');
 const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
+var path = require('path');
+///////for upload images///////////////////
+const multer=require('multer');
+var storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, 
+      // file.originalname)
+       Date.now() + '-' +  file.originalname)
+  }
+});
+var upload = multer({storage: storage});
+
+///////////////////////////////////////////////////////////////////////
 /* GET users listing. */
 
 const JWT_word="khaled";
+router.post('/upload',upload.single('img'), function(req, res, next) {
+    console.log(req.file);
+
+    let host = req.host;
+    let port=process.env.PORT || 8080;
+const filePath = req.protocol + "://" + host +':'+port+ '/uploads/' + req.file.filename;
+
+res.status(201).json({
+  result:filePath
+})
+  
+});
+
+
 
 router.post('/add',Bodyparser.json(), function(req, res, next) {
   let name=req.body.name;
@@ -35,6 +65,9 @@ router.post('/add',Bodyparser.json(), function(req, res, next) {
         product.prices.push(item);
       }
     
+      for(let item of req.body.images){ 
+        product.images.push(item);
+      }
       product.save().then(result=>{
     
         res.status(201).json(
@@ -59,104 +92,226 @@ router.post('/add',Bodyparser.json(), function(req, res, next) {
 
 
 });
-
-
-router.get('/',Bodyparser.json(), function(req, res, next) {
+//get product byid
+router.get('/:productID', function(req, res, next) {
+  let productID=req.params.productID;
+console.log(productID);
+   
   
-    try{
-      let token=jwt.sign(
-        {
-        phone:req.body.phone
-      ,password:req.body.phone
-    },JWT_word,null);
-
-      console.log(token);
-
-        let phone=req.body.phone;
-  console.log(phone);
-  
-  User.find({phone:phone}).exec().then(users=>
+  Product.find({_id:productID}).exec().then(products=>
   {
-    if (users.length<1){
-      return res.status(401).json({
-        message:'auth faild this phone number is not existe'
-        ,status:404
-      });
-    }else {
-      const pw=req.body.password;
-      const  userPw=users[0].password;
-
+    
       
-      const user=users[0];
-      var timestamp = user._id.getTimestamp();
-       if(userPw===pw){
+      
            res.status(200).json(
                {
-                 message:'auth successful',
+            
                  status:200,
-                 user:user,
-                 token:token
-                 ,create_at:timestamp
+                 products:products,
+                 size:products.length
                }
            )
-         }else
-           {
-             res.status(401).json({
-               message:'auth faild this password is wrong'
-               ,status:404
-             });
-         }
-    //   bcrypt.compare(pw,hash,function(err,result){
+         
 
-    //     if (err){
+    }  );
 
-    //       return  res.status(500).json({
+    
+  
 
-    //         err:err,
-    //         status:500
-    //       });
-    //     }else {
-    //       const user=users[0];
-    //    const token=jwt.sign({
-    //         email:user.email,
-    //         userId:user._id
-    //       },"khaled",{
-    //         expiresIn: "1h"
-    //       });
-    //     if(result){
-    //         res.status(200).json(
-    //             {
-    //               message:'auth successful',
-    //               status:200,
-    //               user:user,
-    //               token:token
-    //             }
-    //         )
-    //       }else
-    //         {
-    //           res.status(401).json({
-    //             message:'auth faild this password is wrong'
-    //             ,status:404
-    //           });
-    //       }
+});
+///get all products in store
+router.get('/bystore/:storeID', function(req, res, next) {
+  let storeID=req.params.storeID;
+console.log(storeID);
+   
+  
+  Product.find({storeID:storeID}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+               }
+           )
+         
 
-    //     }
-    //   });
-    }
+    }  );
 
-  });
+    
+  
 
-    }catch(err){
-        console.log(err)
-        res.status(404).json({
-            message:'auth faild this Token is not existe'
-            ,status:404
+});
+///get all products in store and gategorieID
+router.get('/bystoreAndcategorie/:storeID/:categorieID', function(req, res, next) {
+  let storeID=req.params.storeID;
+console.log(storeID);
+
+let categorieID=req.params.categorieID;
+console.log(categorieID);
+   
+  
+  Product.find({storeID:storeID ,categorieID:categorieID}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
+
+///get all products with this supplier
+
+router.get('/bysupplier/:supplierID', function(req, res, next) {
+  let supplierID=req.params.supplierID;
+console.log(supplierID);
+   
+  
+  Product.find({supplierID:supplierID}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
+///get all products with this supplier and gategorieID
+router.get('/bystoreAndcategorie/:supplierID/:categorieID', function(req, res, next) {
+  let supplierID=req.params.supplierID;
+console.log(supplierID);
+
+let categorieID=req.params.categorieID;
+console.log(categorieID);
+   
+  
+  Product.find({supplierID:supplierID ,categorieID:categorieID}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
+
+///delete products byid
+router.delete('/:productID', function(req, res, next) {
+  let productID=req.params.productID;
+console.log(productID);
+   
+  
+  Product.findOneAndDelete({_id:productID},function(err)
+  {
+    
+      
+     if(err){
+      res.status(404).json(
+        {
+     
+          status:404,
+          message:err,
+         
+        }
+    )
+     }else{
+      res.status(200).json(
+        {
+     
+          status:200,
+          message:"delete with succ"
+        }
+    )
+     }
            
-          });
-    }
+         
+
+    }  );
+
+    
   
 
 });
 
 
+
+
+///update products byid
+router.put('/:productID', function(req, res, next) {
+  let productID=req.params.productID;
+console.log(productID);
+   
+Product.findOneAndUpdate({_id:productID}, req.body, function (err, product) {
+  
+
+  if(err){
+    res.status(404).json(
+      {
+   
+        status:404,
+        message:err,
+       
+      }
+  )
+   }
+   else{
+    res.status(200).json(
+      {
+   
+        status:200,
+        message:"update with succ"
+        
+      }
+  )
+   }
+
+});
+  
+  
+
+    
+  
+
+});
 module.exports = router;

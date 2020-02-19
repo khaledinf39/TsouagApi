@@ -25,6 +25,7 @@ const productSchemma=mongoose.Schema({
 ]
 ,images:[{type: String ,required: false}]
     ,storeID:{type: String ,required: true}
+    ,supplierID:{type: String ,required: true}
     
     
 
