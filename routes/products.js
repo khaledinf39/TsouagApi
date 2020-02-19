@@ -58,6 +58,7 @@ router.post('/add',Bodyparser.json(), function(req, res, next) {
         quantity_sold:0
         ,storeID:req.body.storeID
         ,categorieID:req.body.categorieID
+        ,supplierID:req.body.supplierID
         
       });
       
@@ -206,7 +207,7 @@ console.log(supplierID);
 
 });
 ///get all products with this supplier and gategorieID
-router.get('/bystoreAndcategorie/:supplierID/:categorieID', function(req, res, next) {
+router.get('/bysupplierAndcategorie/:supplierID/:categorieID', function(req, res, next) {
   let supplierID=req.params.supplierID;
 console.log(supplierID);
 

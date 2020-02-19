@@ -3,12 +3,14 @@ const  mongoose=require('mongoose');
 const orderSchemma=mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
    
-    nabayment_typeme:{type: Number ,required: true},
+    bayment_type:{type: Number ,required: true},
     sub_total:{type: String ,required: false},
     QRcode:{type: String ,required: false},
     status:{type: Number ,required: true}
     ,userID:{type: String ,required: true}
     ,storeID:{type: String ,required: true}
+    ,create_at:{type: Date, required: true, default: Date.now }
+    
     ,products:[
         {
             _id:mongoose.Schema.Types.ObjectId,
@@ -29,4 +31,4 @@ const orderSchemma=mongoose.Schema({
 
 
 
-module.exports=mongoose.model('Product',orderSchemma);
+module.exports=mongoose.model('Order',orderSchemma);

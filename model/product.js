@@ -11,6 +11,8 @@ const productSchemma=mongoose.Schema({
     QRcode:{type: String ,required: false},
     status:{type: Number ,required: true}
     ,categorieID:{type: String ,required: true}
+    ,create_at:{type: Date, required: true, default: Date.now }
+
     ,prices:[
     {
     // _id:mongoose.Schema.Types.ObjectId,

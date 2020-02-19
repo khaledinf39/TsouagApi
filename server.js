@@ -3,6 +3,7 @@ const stores=require('./routes/stores')
 const users=require('./routes/users')
 const supplier=require('./routes/suppliers')
 const product=require('./routes/products')
+const order_supplier=require('./routes/order_supplier')
 var mongoose=require('mongoose');
 var path = require('path');
 const app=express();
@@ -43,6 +44,7 @@ app.use('/stores',stores);
 app.use('/users',users);
 app.use('/suppliers',supplier);
 app.use('/products',product);
+app.use('/order_supplier',order_supplier);
 
 
 
