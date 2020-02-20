@@ -30,7 +30,13 @@ router.post('/upload',auth,upload.single('img'), function(req, res, next) {
 
     let host = req.host;
     let port=process.env.PORT || 8080;
-const filePath = req.protocol + "://" + host +':'+port+ '/uploads/' + req.file.filename;
+    var filePath="";
+if(port===8080){
+ filePath = req.protocol + "://" + host +':'+port+ '/uploads/' + req.file.filename;
+}else{
+ filePath = req.protocol + "://" + host + '/uploads/' + req.file.filename;
+
+}
 
 res.status(201).json({
   result:filePath
