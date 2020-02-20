@@ -5,6 +5,8 @@ var Product=require('../model/product');
 const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 var path = require('path');
+const auth=require('../medelWare/auth_verfy');
+
 ///////for upload images///////////////////
 const multer=require('multer');
 var storage = multer.diskStorage({
@@ -23,7 +25,7 @@ var upload = multer({storage: storage});
 /* GET users listing. */
 
 const JWT_word="khaled";
-router.post('/upload',upload.single('img'), function(req, res, next) {
+router.post('/upload',auth,upload.single('img'), function(req, res, next) {
     console.log(req.file);
 
     let host = req.host;
@@ -38,7 +40,7 @@ res.status(201).json({
 
 
 
-router.post('/add',Bodyparser.json(), function(req, res, next) {
+router.post('/add',auth,Bodyparser.json(), function(req, res, next) {
   let name=req.body.name;
   Product.find({name:name}).exec().then(result=>
   {
@@ -120,6 +122,61 @@ console.log(productID);
   
 
 });
+///get all products 
+router.get('/', function(req, res, next) {
+ 
+  
+  Product.find().exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+                 ,message:"get all products "
+
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
+///get all products by QRcode
+router.get('/byQRcode/:QR', function(req, res, next) {
+  let QR=req.params.QR;
+console.log(QR);
+   
+  
+  Product.find({QRcode:QR}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+                 ,message:"get all products by QRcode"
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
 ///get all products in store
 router.get('/bystore/:storeID', function(req, res, next) {
   let storeID=req.params.storeID;
@@ -137,6 +194,7 @@ console.log(storeID);
                  status:200,
                  products:products,
                  size:products.length
+                 ,message:"get all products in store"
                }
            )
          
@@ -167,6 +225,8 @@ console.log(categorieID);
                  status:200,
                  products:products,
                  size:products.length
+                 ,message:"get all products in store and gategorieID"
+
                }
            )
          
@@ -178,6 +238,38 @@ console.log(categorieID);
 
 });
 
+///get all products in supplier and gategorieID
+router.get('/bysupplierAndcategorie/:supplierID/:categorieID', function(req, res, next) {
+  let supplierID=req.params.supplierID;
+console.log(supplierID);
+
+let categorieID=req.params.categorieID;
+console.log(categorieID);
+   
+  
+  Product.find({supplierID:supplierID ,categorieID:categorieID}).exec().then(products=>
+  {
+    
+      
+      
+           res.status(200).json(
+               {
+            
+                 status:200,
+                 products:products,
+                 size:products.length
+                 ,message:"get all products in supplierID and gategorieID"
+
+               }
+           )
+         
+
+    }  );
+
+    
+  
+
+});
 ///get all products with this supplier
 
 router.get('/bysupplier/:supplierID', function(req, res, next) {
@@ -206,39 +298,10 @@ console.log(supplierID);
   
 
 });
-///get all products with this supplier and gategorieID
-router.get('/bysupplierAndcategorie/:supplierID/:categorieID', function(req, res, next) {
-  let supplierID=req.params.supplierID;
-console.log(supplierID);
 
-let categorieID=req.params.categorieID;
-console.log(categorieID);
-   
-  
-  Product.find({supplierID:supplierID ,categorieID:categorieID}).exec().then(products=>
-  {
-    
-      
-      
-           res.status(200).json(
-               {
-            
-                 status:200,
-                 products:products,
-                 size:products.length
-               }
-           )
-         
-
-    }  );
-
-    
-  
-
-});
 
 ///delete products byid
-router.delete('/:productID', function(req, res, next) {
+router.delete('/:productID',auth, function(req, res, next) {
   let productID=req.params.productID;
 console.log(productID);
    
@@ -277,9 +340,46 @@ console.log(productID);
 
 
 
+///update product's status byid
+router.put('/:productID/:statusNB',auth, function(req, res, next) {
+  let productID=req.params.productID;
+  let status=req.params.statusNB;
+console.log(productID);
+   
+Product.findOneAndUpdate({_id:productID}, {$set:{status:status}},{new:true}, function (err, product) {
+  
 
+  if(err){
+    res.status(404).json(
+      {
+   
+        status:404,
+        message:err,
+       
+      }
+  )
+   }
+   else{
+    res.status(200).json(
+      {
+   
+        status:200,
+        message:"update status with succ"
+        
+      }
+  )
+   }
+
+});
+  
+  
+
+    
+  
+
+});
 ///update products byid
-router.put('/:productID', function(req, res, next) {
+router.put('/:productID',auth, function(req, res, next) {
   let productID=req.params.productID;
 console.log(productID);
    
@@ -315,4 +415,6 @@ Product.findOneAndUpdate({_id:productID}, req.body, function (err, product) {
   
 
 });
+
+
 module.exports = router;

@@ -6,6 +6,9 @@ const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 const auth=require('../medelWare/auth_verfy');
 var Product=require('../model/product');
+var Electronique_bayments=require('../model/electronique_bayments');
+
+
 
 /* GET users listing. */
 router.get('/',auth, function(req, res, next) {
@@ -35,7 +38,7 @@ router.get('/',auth, function(req, res, next) {
         });
   });
   //order by id 
-  router.get('/:orderid', function(req, res, next) {
+  router.get('/:orderid',auth, function(req, res, next) {
     const id=req.params.orderid;
     Order.findById(id)
          .exec()
@@ -61,8 +64,8 @@ router.get('/',auth, function(req, res, next) {
   
   }); 
   //order by userId and status nb 
-  router.get('/:userid/:status', function(req, res, next) {
-    let id=req.params.orderid;
+  router.get('/by_user_And_status/:userid/:status',auth, function(req, res, next) {
+    let id=req.params.userid;
     let status=req.params.status;
     Order.find({userID:id ,  status:status})
          .exec()
@@ -88,7 +91,7 @@ router.get('/',auth, function(req, res, next) {
   
   });
    //order by storeId and status nb 
-   router.get('/:storeId/:status', function(req, res, next) {
+   router.get('/by_store_And_status/:storeId/:status',auth, function(req, res, next) {
     let id=req.params.storeId;
     let status=req.params.status;
     Order.find({storeID:id ,  status:status})
@@ -114,6 +117,8 @@ router.get('/',auth, function(req, res, next) {
         });
   
   });
+
+  //post new order
   router.post('/',auth, function(req, res, next) {
      
     var products=req.body.products;
@@ -123,14 +128,14 @@ router.get('/',auth, function(req, res, next) {
                 if (!product) {
                     return res.status(500).json({
                         status: 500,
-                        message: 'product not found'
+                        message: 'product not found '+item._id+" "+item.name
                     });
                 }
 
                 if(product.quantity-item.quantity<=0){
                     return res.status(500).json({
                         status: 500,
-                        message: 'the quantity of this product is not enght '
+                        message: 'the quantity of this product is not enght '+item._id+" "+item.name
                     }); 
                 }
     
@@ -141,7 +146,7 @@ router.get('/',auth, function(req, res, next) {
   
   const order_supplier = new Order({
     _id: new mongoose.Types.ObjectId(),
-    bayment_type: req.body.bayment_type,
+    bayment_type: req.body.bayment_type,/// 1===cash 2==visacard
     sub_total: req.body.sub_total,
     QRcode: req.body.QRcode,
     userID: req.body.userID,
@@ -167,6 +172,33 @@ order_supplier.save().then(result => {
                     }
                      );
                 }
+
+    if(req.body.bayment_type===2){
+     const electronique_bayments=new Electronique_bayments({
+      _id: new mongoose.Types.ObjectId(),
+  
+      orderID:result._id,
+      price:req.body.sub_total
+      ,storeID:req.body.storeID
+     })
+
+     electronique_bayments.save().then(result => {
+      if (!result) {
+       return res.status(404).json({
+          status: 404,
+          message: 'error in adding electronique_bayments',
+          result: result
+      })
+     }
+    // else{
+    //   return res.status(200).json({
+    //     status: 200,
+    //     message: 'successefully in adding electronique_bayments',
+    //     result: result
+    // })
+    // }
+  });
+    }            
     res.status(200).json({
         status: 200,
         message: 'order created with successefully',
@@ -175,7 +207,9 @@ order_supplier.save().then(result => {
 });
   
 }); 
-  router.put('/:orderid/:status', function(req, res, next) {
+
+//update order
+  router.put('/:orderid/:status',auth, function(req, res, next) {
     let id=req.params.orderid;
     let status=req.params.status;
     // const upadteops={};
@@ -213,8 +247,8 @@ order_supplier.save().then(result => {
   
   });
   
-  
-  router.delete('/:orderid', function(req, res, next) {
+  //delete order
+  router.delete('/:orderid',auth, function(req, res, next) {
     const id=req.params.orderid;
     Order.remove({_id: id})
         .exec()

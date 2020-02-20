@@ -1,8 +1,9 @@
 const express=require('express')
 const stores=require('./routes/stores')
 const users=require('./routes/users')
-const supplier=require('./routes/suppliers')
-const product=require('./routes/products')
+const suppliers=require('./routes/suppliers')
+const categories=require('./routes/categories')
+const products=require('./routes/products')
 const order_supplier=require('./routes/order_supplier')
 var mongoose=require('mongoose');
 var path = require('path');
@@ -13,7 +14,7 @@ const app=express();
 //connecting to DB
 
 const DB_atlas="mongodb+srv://khaledinf:BQFjLj2WFDl53Bh0@cluster0-wf1ig.mongodb.net/TsouagDB?retryWrites=true&w=majority";
-mongoose.connect(DB_atlas,{ useNewUrlParser: true });
+mongoose.connect(DB_atlas,{ useNewUrlParser: true ,useUnifiedTopology: true });
 
 var db = mongoose.connection;
  
@@ -42,8 +43,9 @@ app.use('/uploads',express.static('uploads'));
 
 app.use('/stores',stores);
 app.use('/users',users);
-app.use('/suppliers',supplier);
-app.use('/products',product);
+app.use('/suppliers',suppliers);
+app.use('/categories',categories);
+app.use('/products',products);
 app.use('/order_supplier',order_supplier);
 
 

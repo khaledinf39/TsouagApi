@@ -4,11 +4,42 @@ const Bodyparser=require('body-parser');
 var Supplier=require('../model/supplier');
 const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
+const auth=require('../medelWare/auth_verfy');
+var Store=require('../model/store');
+
 /* GET users listing. */
 
 const JWT_word="khaled";
 
 router.post('/logup',Bodyparser.json(), function(req, res, next) {
+
+  try{
+    Store.find({_id:req.body.storeID},function(err){
+      if(err){
+        return res.status(500).json({
+          status:500,
+          message:err,
+        
+        })
+      }
+    }).exec().then(stores=>{
+      if(stores.length<1){
+       return res.status(500).json({
+          status:500,
+          message:'this store id is not exist in db',
+        
+        })
+      
+      
+      }
+    })
+  }catch(err){
+    return res.status(500).json({
+      status:500,
+      message:err,
+    
+    })
+  }
   const phone=req.body.phone;
   console.log(phone);
   Supplier.find({phone:phone}).exec().then(result=>
@@ -195,6 +226,156 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
   
 
 });
+//get all suppliers 
+router.get('/',auth, function(req, res, next) {
+  
+  Supplier.find().exec().then(users=>{
+    if(!users){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"get  all suppliers ",
+        users:users
+      
+      })
+    
+    }
+  })
 
+
+});
+//get all supplier by store 
+router.get('/bystore/:storeid',auth, function(req, res, next) {
+  
+  Supplier.find({storeID:req.params.storeid}).exec().then(suppliers=>{
+    if(!suppliers){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"get all suppliers ",
+        suppliers:suppliers
+      
+      })
+    
+    }
+  })
+
+
+});
+//get  supplier profile
+router.get('/:id',auth, function(req, res, next) {
+  
+  Supplier.find({_id:req.params.id}).exec().then(supplier=>{
+    if(!supplier){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"get supplier profile",
+        suppliers:supplier
+      
+      })
+    
+    }
+  })
+
+
+});
+//update supplier info
+router.put('/:id',auth,Bodyparser.json(), function(req, res, next) {
+  
+  Supplier.findByIdAndUpdate({_id:req.params.id},req.body,{new:true},function(err){
+    if(err){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"update supplier with succesfully",
+      
+      })
+    
+    }
+  })
+
+
+});
+///update supplier's status byid
+router.put('/:supplierID/:statusNB',auth, function(req, res, next) {
+  let supplierID=req.params.supplierID;
+  let status=req.params.statusNB;
+
+   
+Supplier.findOneAndUpdate({_id:supplierID}, {$set:{status:status}},{new:true}, function (err, product) {
+  
+
+  if(err){
+    res.status(404).json(
+      {
+   
+        status:404,
+        message:err,
+       
+      }
+  )
+   }
+   else{
+    res.status(200).json(
+      {
+   
+        status:200,
+        message:"update status with succ"
+        
+      }
+  )
+   }
+
+});
+  
+  
+
+    
+  
+
+});
+//delete supplier info
+router.delete('/:id',auth, function(req, res, next) {
+  
+  Supplier.findByIdAndRemove({_id:req.params.id},function(err){
+    if(err){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"delete supplier with succesfully",
+      
+      })
+    
+    }
+  })
+
+
+});
 
 module.exports = router;
