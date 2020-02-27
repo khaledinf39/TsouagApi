@@ -46,7 +46,7 @@ app.use('/users',users);
 app.use('/suppliers',suppliers);
 app.use('/categories',categories);
 app.use('/products',products);
-app.use('/order_supplier',order_supplier);
+app.use('/order',order_supplier);
 
 
 

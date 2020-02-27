@@ -134,13 +134,13 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
     try{
       let token=jwt.sign(
         {
-        phone:req.body.phone
-      ,password:req.body.phone
+        phone:req.query.phone
+      ,password:req.query.phone
     },JWT_word,null);
 
       console.log(token);
 
-        let phone=req.body.phone;
+        let phone=req.query.phone;
   console.log(phone);
   
   User.find({phone:phone}).exec().then(users=>
@@ -151,7 +151,7 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
         ,status:404
       });
     }else {
-      const pw=req.body.password;
+      const pw=req.query.password;
       const  userPw=users[0].password;
 
       

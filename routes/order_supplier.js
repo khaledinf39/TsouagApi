@@ -11,8 +11,8 @@ var Electronique_bayments=require('../model/electronique_bayments');
 
 
 /* GET users listing. */
-router.get('/',auth, function(req, res, next) {
-    Order.find()
+router.get('/:status',auth, function(req, res, next) {
+    Order.find({status:req.params.status})
         .limit(10)
         .exec()
         .then(doc=>{

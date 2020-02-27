@@ -113,7 +113,7 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
       },JWT_word,null
      
       );
-        let phone=req.body.phone;
+        let phone=req.query.phone;
   console.log(phone);
   Store.find({phone:phone}).exec().then(stores=>
   {
@@ -123,7 +123,7 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
         ,status:404
       });
     }else {
-      const pw=req.body.password;
+      const pw=req.query.password;
       const  storePw=stores[0].password;
 
       
