@@ -15,8 +15,8 @@ const productSchemma=mongoose.Schema({
 
     ,prices:[
     {
-    // _id:mongoose.Schema.Types.ObjectId,
-    _id:{type: Number ,required: true},
+  
+    _id:mongoose.Schema.Types.ObjectId,
    
     unity:{type: String ,required: true},
     price:{type: String ,required: true},
@@ -26,6 +26,7 @@ const productSchemma=mongoose.Schema({
 }
 ]
 ,images:[{type: String ,required: false}]
+
     ,storeID:{type: String ,required: true}
     ,supplierID:{type: String ,required: true}
     
