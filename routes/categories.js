@@ -19,7 +19,7 @@ router.get('/',auth, function(req, res, next) {
             res.status(200).json({
               status:200,
               message:'get all Categorie ',
-              orders:doc,
+              categories:doc,
               size:doc.length
   
             })
@@ -47,7 +47,7 @@ router.get('/',auth, function(req, res, next) {
             res.status(200).json({
               status:200,
               message:'get all Categorie ',
-              orders:doc,
+              categories:doc,
               size:doc.length
   
             })
@@ -78,7 +78,7 @@ router.get('/',auth, function(req, res, next) {
             res.status(200).json({
                 status:200,
                 message:"add categorie with succesfully",
-                categorie:result
+                categories:result
             })
         }else{
             res.status(500).json({
