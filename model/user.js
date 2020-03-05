@@ -10,7 +10,9 @@ const userSchemma=mongoose.Schema({
     status:{type: Boolean ,required: true},
     password:{type: String ,required: true},
     image:{type: String ,required: false}
-    ,storeID:{type: String ,required: true}
+    ,storeID:{type: String ,required: true} 
+    ,address:{type: String ,required: false}
+    ,create_at:{type: Date, required: true, default: Date.now }
 
 });
 
