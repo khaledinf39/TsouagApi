@@ -67,6 +67,7 @@ router.post('/add',auth,Bodyparser.json(), function(req, res, next) {
         ,storeID:req.body.storeID
         ,categorieID:req.body.categorieID
         ,supplierID:req.body.supplierID
+        ,QRcode:req.body.QRcode
         
       });
       

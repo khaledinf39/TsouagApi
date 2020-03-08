@@ -6,6 +6,7 @@ const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 const auth=require('../medelWare/auth_verfy');
 var Product=require('../model/product');
+var User=require('../model/user');
 var Electronique_bayments=require('../model/electronique_bayments');
 
 
@@ -143,68 +144,80 @@ router.get('/:status',auth, function(req, res, next) {
                
             });
     }
+    User.findById(req.body.userID).exec().then(
+      user => {
+        if (!user) {
+          return res.status(500).json({
+              status: 500,
+              message: 'user not found '+req.body.userID
+          });
+      }else{
+        const order_supplier = new Order({
+          _id: new mongoose.Types.ObjectId(),
+          bayment_type: req.body.bayment_type,/// 1===cash 2==visacard
+          sub_total: req.body.sub_total,
+          QRcode: new Date().getTime(),
+          userID: req.body.userID,
+          storeID: req.body.storeID,
+          status:1,
+          user_name:user.name,
+          user_address:user.address,
+          user_phone:user.phone
+      });
+
+      for(let item of products){
+        order_supplier.products.push(item);
+      }
+      order_supplier.save().then(result => {
+          console.log(result);
+          for(let item of products){
+          
+                          Product.findOneAndUpdate(
+                              { _id: item._id },
+                               { $inc: {quantity: -item.quantity } }, 
+                               {new: true },
+                               function(err, response) {
+                              if (err) {
+                              callback(err);
+                             }
+                          }
+                           );
+                      }
+      
+          if(req.body.bayment_type===2){
+           const electronique_bayments=new Electronique_bayments({
+            _id: new mongoose.Types.ObjectId(),
+        
+            orderID:result._id,
+            price:req.body.sub_total
+            ,storeID:req.body.storeID
+           })
+      
+           electronique_bayments.save().then(result => {
+            if (!result) {
+             return res.status(404).json({
+                status: 404,
+                message: 'error in adding electronique_bayments',
+                result: result
+            })
+           }
+         
+        });
+          }            
+          res.status(200).json({
+              status: 200,
+              message: 'order created with successefully',
+              result: result
+          })
+      });
+
+      }
+
+
+      });
   
-  const order_supplier = new Order({
-    _id: new mongoose.Types.ObjectId(),
-    bayment_type: req.body.bayment_type,/// 1===cash 2==visacard
-    sub_total: req.body.sub_total,
-    QRcode: req.body.QRcode,
-    userID: req.body.userID,
-    storeID: req.body.storeID,
-    status:1
-});
 
-for(let item of products){
-  order_supplier.products.push(item);
-}
-order_supplier.save().then(result => {
-    console.log(result);
-    for(let item of products){
-    
-                    Product.findOneAndUpdate(
-                        { _id: item._id },
-                         { $inc: {quantity: -item.quantity } }, 
-                         {new: true },
-                         function(err, response) {
-                        if (err) {
-                        callback(err);
-                       }
-                    }
-                     );
-                }
 
-    if(req.body.bayment_type===2){
-     const electronique_bayments=new Electronique_bayments({
-      _id: new mongoose.Types.ObjectId(),
-  
-      orderID:result._id,
-      price:req.body.sub_total
-      ,storeID:req.body.storeID
-     })
-
-     electronique_bayments.save().then(result => {
-      if (!result) {
-       return res.status(404).json({
-          status: 404,
-          message: 'error in adding electronique_bayments',
-          result: result
-      })
-     }
-    // else{
-    //   return res.status(200).json({
-    //     status: 200,
-    //     message: 'successefully in adding electronique_bayments',
-    //     result: result
-    // })
-    // }
-  });
-    }            
-    res.status(200).json({
-        status: 200,
-        message: 'order created with successefully',
-        result: result
-    })
-});
   
 }); 
 

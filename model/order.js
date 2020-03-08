@@ -8,6 +8,9 @@ const orderSchemma=mongoose.Schema({
     QRcode:{type: String ,required: false},
     status:{type: Number ,required: true}
     ,userID:{type: String ,required: true}
+    ,user_name:{type: String ,required: false}
+    ,user_address:{type: String ,required: false}
+    ,user_phone:{type: String ,required: true}
     ,storeID:{type: String ,required: true}
     ,create_at:{type: Date, required: true, default: Date.now }
     
