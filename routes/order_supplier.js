@@ -164,9 +164,9 @@ router.get('/:status',auth, function(req, res, next) {
                   userID: req.body.userID,
                   storeID: req.body.storeID,
                   status:1,
-                  user_name:user.name,
-                  user_address:user.address,
-                  user_phone:user.phone
+                  user_name:req.body.user_name,
+                  user_address:req.body.user_address,
+                  user_phone:req.body.user_phone
               });
         
               for(let item of products){
@@ -211,7 +211,7 @@ router.get('/:status',auth, function(req, res, next) {
                   res.status(200).json({
                       status: 200,
                       message: 'order created with successefully',
-                      result: result
+                      order:[result] 
                   })
               });
         
