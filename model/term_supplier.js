@@ -8,4 +8,4 @@ const termSchemma=mongoose.Schema({
 
 });
 
-module.exports=mongoose.model('Terms_Condutions',termSchemma);
+module.exports=mongoose.model('Terms_Condutions_Supplier',termSchemma);

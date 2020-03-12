@@ -13,46 +13,73 @@ var Electronique_bayments=require('../model/electronique_bayments');
 
 
 /* GET users listing. */
-router.get('/:status',auth, function(req, res, next) {
+router.get('/:status/:page',auth, function(req, res, next) {
+  var perPage = 10
+  var page = req.params.page || 1
     Order.find({status:req.params.status})
-        .limit(10)
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
         .exec()
         .then(doc=>{
           console.log(doc);
           if (doc){
-            res.status(200).json({
-              status:200,
-              message:'get order ',
-              orders:doc,
-              size:doc.length
-  
-            })
+            Order.find({status:req.params.status}).count().exec(function(err, count) {
+              if (err) return next(err)
+              res.status(200).json({
+                status:200,
+                message:'get order ',
+                orders:doc,
+                Pagination:{
+                  current: page,
+                      pages: Math.ceil(count / perPage)
+                      ,size:doc.length
+                }
+    
+              })
+            });
+             
           }else {
             res.status(404).json({
               status:404,
               message:'no data found for this id',
             })
           }
+        
         })
+     
         .catch(err=>{
           console.log(err);
           res.status(500).json({ status:500,err:err});
         });
+      
   });
   //order by id 
-  router.get('/:orderid',auth, function(req, res, next) {
+  router.get('/:orderid/:page',auth, function(req, res, next) {
+    var perPage = 10
+    var page = req.params.page || 1
     const id=req.params.orderid;
     Order.findById(id)
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
          .exec()
         .then(doc=>{
           console.log(doc);
          if (doc){
+          Order.findById(id).count().exec(function(err, count) {
+            if (err) return next(err)
+            res.status(200).json({
+              status:200,
+              message:'get order ',
+              orders:doc,
+              Pagination:{
+                current: page,
+                    pages: Math.ceil(count / perPage)
+                    ,size:doc.length
+              }
   
-           res.status(200).json({
-             status:200,
-             message:'get order details',
-             order:doc
-           })
+            })
+          });
+           
          }else {
            res.status(404).json({
              message:'no data found for this id',
@@ -66,20 +93,33 @@ router.get('/:status',auth, function(req, res, next) {
   
   }); 
   //order by userId and status nb 
-  router.get('/by_user_And_status/:userid/:status',auth, function(req, res, next) {
+  router.get('/by_user_And_status/:userid/:status/:page',auth, function(req, res, next) {
+    var perPage = 10
+    var page = req.params.page || 1
     let id=req.params.userid;
     let status=req.params.status;
     Order.find({userID:id ,  status:status})
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
          .exec()
         .then(doc=>{
           console.log(doc);
          if (doc){
   
-           res.status(200).json({
-             status:200,
-             message:'get order details',
-             order:doc
-           })
+          Order.find({userID:id ,  status:status}).count().exec(function(err, count) {
+            if (err) return next(err)
+            res.status(200).json({
+              status:200,
+              message:'get order ',
+              orders:doc,
+              Pagination:{
+                current: page,
+                    pages: Math.ceil(count / perPage)
+                    ,size:doc.length
+              }
+  
+            })
+          });
          }else {
            res.status(404).json({
              message:'no data found for this id',
@@ -93,20 +133,34 @@ router.get('/:status',auth, function(req, res, next) {
   
   });
    //order by storeId and status nb 
-   router.get('/by_store_And_status/:storeId/:status',auth, function(req, res, next) {
+   router.get('/by_store_And_status/:storeId/:status/:page',auth, function(req, res, next) {
+    var perPage = 10
+    var page = req.params.page || 1
     let id=req.params.storeId;
     let status=req.params.status;
     Order.find({storeID:id ,  status:status})
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
          .exec()
         .then(doc=>{
           console.log(doc);
          if (doc){
   
-           res.status(200).json({
-             status:200,
-             message:'get order details',
-             order:doc
-           })
+          Order.find({storeID:id ,  status:status}).count().exec(function(err, count) {
+            if (err) return next(err)
+            res.status(200).json({
+              status:200,
+              message:'get order ',
+              orders:doc,
+              Pagination:{
+                current: page,
+                    pages: Math.ceil(count / perPage)
+                    ,size:doc.length
+              }
+  
+            })
+          });
+
          }else {
            res.status(404).json({
              message:'no data found for this id',

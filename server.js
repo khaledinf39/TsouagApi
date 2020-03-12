@@ -1,5 +1,6 @@
 const express=require('express')
 const stores=require('./routes/stores')
+const terms=require('./routes/terms')
 const users=require('./routes/users')
 const suppliers=require('./routes/suppliers')
 const categories=require('./routes/categories')
@@ -42,6 +43,7 @@ app.use(express.static('public'));
 app.use('/uploads',express.static('uploads'));
 
 app.use('/stores',stores);
+app.use('/terms',terms);
 app.use('/users',users);
 app.use('/suppliers',suppliers);
 app.use('/categories',categories);

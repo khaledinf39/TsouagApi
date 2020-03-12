@@ -6,7 +6,7 @@ const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 var Expenses=require('../model/expenses');
 var Box=require('../model/box');
-var Term=require('../model/tirm');
+var Term=require('../model/term_supplier');
 const auth=require('../medelWare/auth_verfy');
 
 /* GET users listing. */
@@ -196,72 +196,6 @@ router.post('/login',Bodyparser.json(), function(req, res, next) {
   
 
 });
-
-
-
-///add to Term
-router.post('/addTerm_condition',auth, function(req, res, next) {
-  console.log(req.query)
-const tirm=new Term({
-   _id:mongoose.Types.ObjectId(),
-  
-  titel:req.query.titel
-  ,body:req.query.body
-  ,storeID:req.query.storeID
-
-})  
-tirm.save().then(result=>{
-  res.status(200).json({
-    status:200,
-    message:'add to Term_condition with succesfull',
-    result:result
-  })
-})
-  
-
-
-});
-//// update term_condition by store
-router.put('/term_condition/:id',auth, function(req, res, next) {
-    
-   
-
-  Term.findByIdAndUpdate({_id:req.params.id},req.query,{new:true}).exec().then(result=>{
-      if(result){
-          res.status(200).json({
-              status:200,
-              message:"update term_condition with succesfully",
-              term_condition:result
-          })
-      }else{
-          res.status(500).json({
-              status:500,
-              message:"error to update",
-              term_condition:result
-          })
-      }
-  })
-});
-
- //// delete Term by store
- router.delete('/term_condition/:id',auth,Bodyparser.json(), function(req, res, next) {
-  Term.findByIdAndRemove({_id:req.params.id},function(err){
-      if(err){
-        res.status(500).json({
-          status:500,
-          message:err,
-        
-        })
-      }else{
-        res.status(200).json({
-          status:200,
-          message:"delete term_condition with succesfully",
-        
-        })
-      
-      }
-    })
-});
 ///add to box
 router.post('/addTObox',auth, function(req, res, next) {
   console.log(req.query)
@@ -304,29 +238,7 @@ expenses.save().then(result=>{
 
 
 });
-//get term by store 
-router.get('/term/:storeID',auth, function(req, res, next) {
-  
-  Term.find({storeID:req.params.storeID}).exec().then(result=>{
-    if(!result){
-      res.status(500).json({
-        status:500,
-        message:err,
-      
-      })
-    }else{
-      res.status(200).json({
-        status:200,
-        message:"get all term by store ",
-        result:result
-      
-      })
-    
-    }
-  })
 
-
-});
 //get box by store 
 router.get('/box/:storeID',auth, function(req, res, next) {
   
@@ -341,7 +253,7 @@ router.get('/box/:storeID',auth, function(req, res, next) {
       res.status(200).json({
         status:200,
         message:"get all box by store ",
-        result:result
+        boxes:result
       
       })
     
