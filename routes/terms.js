@@ -8,9 +8,9 @@ var Term_supplier=require('../model/term_supplier');
 var Term_client=require('../model/term_client');
 const auth=require('../medelWare/auth_verfy');
 //get term by store 
-router.get('/term_spplier/:storeID',auth, function(req, res, next) {
+router.get('/term_supplier/:storeID',auth, function(req, res, next) {
   
-    Term_spplier.find({storeID:req.params.storeID}).exec().then(result=>{
+    Term_supplier.find({storeID:req.params.storeID}).exec().then(result=>{
       if(!result){
         res.status(500).json({
           status:500,
