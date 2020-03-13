@@ -6,6 +6,7 @@ const suppliers=require('./routes/suppliers')
 const categories=require('./routes/categories')
 const products=require('./routes/products')
 const order_supplier=require('./routes/order_supplier')
+const electronique_bayments=require('./routes/electronique_bayments')
 var mongoose=require('mongoose');
 var path = require('path');
 const app=express();
@@ -49,6 +50,7 @@ app.use('/suppliers',suppliers);
 app.use('/categories',categories);
 app.use('/products',products);
 app.use('/order',order_supplier);
+app.use('/electronique_bayments',electronique_bayments);
 
 
 
