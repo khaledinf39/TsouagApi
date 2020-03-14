@@ -334,7 +334,7 @@ router.get('/:id',auth, function(req, res, next) {
 //update store info
 router.put('/:id',auth,Bodyparser.json(), function(req, res, next) {
   
-  Store.findByIdAndUpdate({_id:req.params.id},req.body,{new:true},function(err){
+  Store.findByIdAndUpdate({_id:req.params.id},req.body,{new:true},function(err,store){
     if(err){
       res.status(500).json({
         status:500,
@@ -345,7 +345,8 @@ router.put('/:id',auth,Bodyparser.json(), function(req, res, next) {
       res.status(200).json({
         status:200,
         message:"update store with succesfully",
-      
+        store:store,
+      token:req.headers.token
       })
     
     }
