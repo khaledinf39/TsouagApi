@@ -8,7 +8,7 @@ const productSchemma=mongoose.Schema({
     description:{type: String ,required: true},
     quantity:{type: Number ,required: false},
     quantity_sold:{type: Number ,required: false},
-    QRcode:{type: String ,required: false},
+    QRcode:{type: String ,required: true},
     status:{type: Number ,required: true}
     ,categorieID:{type: String ,required: true}
     ,create_at:{type: Date, required: true, default: Date.now }
