@@ -11,10 +11,34 @@ var Store=require('../model/store');
 var Electronique_bayments=require('../model/electronique_bayments');
 
 
+function  getProducts(doc){
+  var products=new Array();
+  for(item of doc){
+           
+           
+           
+    for(pro of item.products){
+      console.log(pro);
+      products.push(
+        {
+          _id:item._id,  
+        name:pro.name
+        ,quantity:pro.quantity
+      ,price:pro.price
+    ,create_at:item.create_at
+    ,status:item.status
+        
+  })
+ }
 
+
+
+  }
+return products;
+}
 /* GET users listing. */
 router.get('/:status/:page',auth, function(req, res, next) {
-  var products= new Array();
+  
   var perPage = 10
   var page = req.params.page || 1
   Mostalamat.find({status:req.params.status})
@@ -25,27 +49,8 @@ router.get('/:status/:page',auth, function(req, res, next) {
           
           console.log(doc);
           if (doc){
-            for(item of doc){
-           
-           
-           
-              for(pro of item.products){
-                console.log(pro);
-                products.push(
-                  {
-                    _id:item._id,  
-                  name:pro.name
-                  ,quantity:pro.quantity
-                ,price:pro.price
-              ,create_at:item.create_at
-              ,status:item.status
-                  
-            })
-           }
-
-
-
-            }
+            var products= new Array();
+            products=getProducts(doc);
             Mostalamat.find({status:req.params.status}).count().exec(function(err, count) {
               if (err) return next(err)
               res.status(200).json({
@@ -88,12 +93,14 @@ router.get('/:status/:page',auth, function(req, res, next) {
         .then(doc=>{
           console.log(doc);
          if (doc){
+          var products= new Array();
+          products=getProducts(doc);
           Mostalamat.findById(id).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
               message:'get order ',
-              orders:doc,
+              orders:products,
               Pagination:{
                 current: page,
                     pages: Math.ceil(count / perPage)
@@ -128,13 +135,14 @@ router.get('/:status/:page',auth, function(req, res, next) {
         .then(doc=>{
           console.log(doc);
          if (doc){
-  
+          var products= new Array();
+          products=getProducts(doc);
           Mostalamat.find({userID:id ,  status:status}).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
               message:'get order ',
-              orders:doc,
+              orders:products,
               Pagination:{
                 current: page,
                     pages: Math.ceil(count / perPage)
@@ -168,13 +176,14 @@ router.get('/:status/:page',auth, function(req, res, next) {
         .then(doc=>{
           console.log(doc);
          if (doc){
-  
+          var products= new Array();
+          products=getProducts(doc);
           Mostalamat.find({storeID:id ,  status:status}).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
               message:'get order ',
-              orders:doc,
+              orders:products,
               Pagination:{
                 current: page,
                     pages: Math.ceil(count / perPage)
