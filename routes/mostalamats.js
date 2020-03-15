@@ -81,6 +81,52 @@ router.get('/:status/:page',auth, function(req, res, next) {
         });
       
   });
+
+  /* GET users listing. */
+router.get('/bystore/:storeID/:page',auth, function(req, res, next) {
+  
+  var perPage = 10
+  var page = req.params.page || 1
+  Mostalamat.find({storeID:req.params.storeID})
+    .skip((perPage * page) - perPage)
+    .limit(perPage)
+        .exec()
+        .then(doc=>{
+          
+          console.log(doc);
+          if (doc){
+            var products= new Array();
+            products=getProducts(doc);
+            Mostalamat.find({status:req.params.status}).count().exec(function(err, count) {
+              if (err) return next(err)
+              res.status(200).json({
+                status:200,
+                message:'get order ',
+                orders:products,
+                Pagination:{
+                  current: page,
+                      pages: Math.ceil(count / perPage)
+                      ,size:products.length
+                }
+    
+              })
+            });
+             
+          }else {
+            res.status(404).json({
+              status:404,
+              message:'no data found for this id',
+            })
+          }
+        
+        })
+     
+        .catch(err=>{
+          console.log(err);
+          res.status(500).json({ status:500,err:err});
+        });
+      
+  });
   //order by id 
   router.get('/:orderid/:page',auth, function(req, res, next) {
     var perPage = 10
