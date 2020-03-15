@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 const Bodyparser=require('body-parser');
-var Order=require('../model/order');
+var Mostalamat=require('../model/mostalamat');
 const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 const auth=require('../medelWare/auth_verfy');
 var Product=require('../model/product');
-var User=require('../model/user');
+var Supplier=require('../model/supplier');
 var Store=require('../model/store');
 var Electronique_bayments=require('../model/electronique_bayments');
 
@@ -16,14 +16,14 @@ var Electronique_bayments=require('../model/electronique_bayments');
 router.get('/:status/:page',auth, function(req, res, next) {
   var perPage = 10
   var page = req.params.page || 1
-    Order.find({status:req.params.status})
+  Mostalamat.find({status:req.params.status})
     .skip((perPage * page) - perPage)
     .limit(perPage)
         .exec()
         .then(doc=>{
           console.log(doc);
           if (doc){
-            Order.find({status:req.params.status}).count().exec(function(err, count) {
+            Mostalamat.find({status:req.params.status}).count().exec(function(err, count) {
               if (err) return next(err)
               res.status(200).json({
                 status:200,
@@ -58,14 +58,14 @@ router.get('/:status/:page',auth, function(req, res, next) {
     var perPage = 10
     var page = req.params.page || 1
     const id=req.params.orderid;
-    Order.findById(id)
+    Mostalamat.findById(id)
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
         .then(doc=>{
           console.log(doc);
          if (doc){
-          Order.findById(id).count().exec(function(err, count) {
+          Mostalamat.findById(id).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
@@ -98,7 +98,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
     var page = req.params.page || 1
     let id=req.params.userid;
     let status=req.params.status;
-    Order.find({userID:id ,  status:status})
+    Mostalamat.find({userID:id ,  status:status})
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
@@ -106,7 +106,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
           console.log(doc);
          if (doc){
   
-          Order.find({userID:id ,  status:status}).count().exec(function(err, count) {
+          Mostalamat.find({userID:id ,  status:status}).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
@@ -138,7 +138,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
     var page = req.params.page || 1
     let id=req.params.storeId;
     let status=req.params.status;
-    Order.find({storeID:id ,  status:status})
+    Mostalamat.find({storeID:id ,  status:status})
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
@@ -146,7 +146,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
           console.log(doc);
          if (doc){
   
-          Order.find({storeID:id ,  status:status}).count().exec(function(err, count) {
+          Mostalamat.find({storeID:id ,  status:status}).count().exec(function(err, count) {
             if (err) return next(err)
             res.status(200).json({
               status:200,
@@ -176,7 +176,9 @@ router.get('/:status/:page',auth, function(req, res, next) {
 
   //post new order
   router.post('/',auth, function(req, res, next) {
-     
+
+  
+/***************************************************************** */
     var products=req.body.products;
     for(let item of products){
         Product.findById(item._id).exec().then(
@@ -188,19 +190,12 @@ router.get('/:status/:page',auth, function(req, res, next) {
                     });
                 }
 
-                if(product.quantity-item.quantity<=0){
-                    return res.status(500).json({
-                        status: 500,
-                        message: 'the quantity of this product is not enght '+item._id+" "+item.name
-                    }); 
-                }
     
     
                
             });
     }
-    
-    User.findById(req.body.userID).exec().then(
+    Supplier.findById(req.body.userID).exec().then(
       user => {
         if (!user) {
           Store.findById(req.body.userID).exec().then(
@@ -210,13 +205,13 @@ router.get('/:status/:page',auth, function(req, res, next) {
                   status: 500,
                   message: 'user not found '+req.body.userID });
               }
-             });
-             } 
-             }); 
-
-
-         
-                const order_supplier = new Order({
+            });
+          }
+             
+        });   
+          
+          
+                const order_supplier = new Mostalamat({
                   _id: new mongoose.Types.ObjectId(),
                   bayment_type: req.body.bayment_type,/// 1===cash 2==visacard
                   sub_total: req.body.sub_total,
@@ -238,10 +233,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
                   
                                   Product.findOneAndUpdate(
                                       { _id: item._id },
-                                       { 
-                                         $inc: {quantity: -item.quantity }
-                                       ,$inc: {quantity_sold: +item.quantity } 
-                                      }, 
+                                       { $inc: {quantity: +item.quantity } }, 
                                        {new: true },
                                        function(err, response) {
                                       if (err) {
@@ -250,27 +242,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
                                   }
                                    );
                               }
-              
-                  if(req.body.bayment_type===2){
-                   const electronique_bayments=new Electronique_bayments({
-                    _id: new mongoose.Types.ObjectId(),
-                
-                    orderID:result._id,
-                    price:req.body.sub_total
-                    ,storeID:req.body.storeID
-                   })
-              
-                   electronique_bayments.save().then(result => {
-                    if (!result) {
-                     return res.status(404).json({
-                        status: 404,
-                        message: 'error in adding electronique_bayments',
-                        result: result
-                    })
-                   }
-                 
-                });
-                  }            
+                       
                   res.status(200).json({
                       status: 200,
                       message: 'order created with successefully',
@@ -279,14 +251,14 @@ router.get('/:status/:page',auth, function(req, res, next) {
               });
         
               
-           
+            
           
          
-     
+      
      
 
 
-    
+     
   
 
 
@@ -301,7 +273,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
     // for (const ops of req.body){
     //   upadteops[ops.propertyName]=ops.value;
     // }
-    Order.update(
+    Mostalamat.update(
       {_id: id}
     ,{$set:{status:status}}
     ,{new: true },
@@ -335,7 +307,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
   //delete order
   router.delete('/:orderid',auth, function(req, res, next) {
     const id=req.params.orderid;
-    Order.remove({_id: id})
+    Mostalamat.remove({_id: id})
         .exec()
         .then(result=>{
           console.log(result);

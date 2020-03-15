@@ -345,7 +345,42 @@ console.log(productID);
 
 });
 
+///delete all products 
+router.delete('/',auth, function(req, res, next) {
 
+   
+  
+  Product.deleteMany(function(err)
+  {
+    
+      
+     if(err){
+      res.status(404).json(
+        {
+     
+          status:404,
+          message:err,
+         
+        }
+    )
+     }else{
+      res.status(200).json(
+        {
+     
+          status:200,
+          message:"delete with succ"
+        }
+    )
+     }
+           
+         
+
+    }  );
+
+    
+  
+
+});
 
 ///update product's status byid
 router.put('/:productID/:statusNB',auth, function(req, res, next) {
