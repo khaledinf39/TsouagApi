@@ -6,7 +6,13 @@ const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 var path = require('path');
 const auth=require('../medelWare/auth_verfy');
-
+// const cloudinary=require('cloudinary').v2;
+/**********************************************config */
+// cloudinary.config({
+//   cloud_name:''
+//   ,api_key:''
+//   ,api_secret:''
+// })
 ///////for upload images///////////////////
 const multer=require('multer');
 var storage = multer.diskStorage({
