@@ -84,11 +84,11 @@ router.get('/:status/:page',auth, function(req, res, next) {
   });
 
   /* GET users listing. */
-router.get('/bystore/:storeID/:page',auth, function(req, res, next) {
+router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   
   var perPage = 10
   var page = req.params.page || 1
-  Mostalamat.find({storeID:req.params.storeID})
+  Mostalamat.find({storeID:req.params.storeID ,status:req.params.status})
     .skip((perPage * page) - perPage)
     .limit(perPage)
         .exec()
