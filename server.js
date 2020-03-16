@@ -2,6 +2,7 @@ const express=require('express')
 const stores=require('./routes/stores')
 const terms=require('./routes/terms')
 const users=require('./routes/users')
+const upload=require('./routes/upload')
 const suppliers=require('./routes/suppliers')
 const categories=require('./routes/categories')
 const products=require('./routes/products')
@@ -12,6 +13,10 @@ var mongoose=require('mongoose');
 var path = require('path');
 const app=express();
 
+var express_fileupload=require('express-fileupload');
+app.use(express_fileupload({
+  useTempFiles:true
+}))
 
 
 //connecting to DB
@@ -53,6 +58,7 @@ app.use('/products',products);
 app.use('/order',order_supplier);
 app.use('/mostalamats',mostalamats);
 app.use('/electronique_bayments',electronique_bayments);
+app.use('/upload',upload);
 
 
 

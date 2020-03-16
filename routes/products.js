@@ -6,51 +6,8 @@ const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 var path = require('path');
 const auth=require('../medelWare/auth_verfy');
-// const cloudinary=require('cloudinary').v2;
-/**********************************************config */
-// cloudinary.config({
-//   cloud_name:''
-//   ,api_key:''
-//   ,api_secret:''
-// })
-///////for upload images///////////////////
-const multer=require('multer');
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads')
-  },
-  filename: (req, file, cb) => {
-    cb(null, 
-      // file.originalname)
-       Date.now() + '-' +  file.originalname)
-  }
-});
-var upload = multer({storage: storage});
-
-///////////////////////////////////////////////////////////////////////
-/* GET users listing. */
 
 const JWT_word="khaled";
-router.post('/upload',auth,upload.single('img'), function(req, res, next) {
-    console.log(req.file);
-
-    let host = req.host;
-    let port=process.env.PORT || 8080;
-    var filePath="";
-if(host==="localhost"){
- filePath = req.protocol + "://" + host +':'+port+ '/uploads/' + req.file.filename;
-}else{
- filePath = req.protocol + "://" + host + '/uploads/' + req.file.filename;
-
-}
-
-res.status(201).json({
-  result:filePath
-})
-  
-});
-
-
 
 router.post('/add',auth,Bodyparser.json(), function(req, res, next) {
   let name=req.body.name;
