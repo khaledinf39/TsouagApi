@@ -12,29 +12,30 @@ var Electronique_bayments=require('../model/electronique_bayments');
 
 
 function  getProducts(doc){
-  var products=new Array();
-  for(item of doc){
+  return doc;
+//   var products=new Array();
+//   for(item of doc){
            
            
            
-    for(pro of item.products){
-      console.log(pro);
-      products.push(
-        {
-          _id:item._id,  
-        name:pro.name
-        ,quantity:pro.quantity
-      ,price:pro.price
-    ,create_at:item.create_at
-    ,status:item.status
+//     for(pro of item.products){
+//       console.log(pro);
+//       products.push(
+//         {
+//           _id:item._id,  
+//         name:pro.name
+//         ,quantity:pro.quantity
+//       ,price:pro.price
+//     ,create_at:item.create_at
+//     ,status:item.status
         
-  })
- }
+//   })
+//  }
 
 
 
-  }
-return products;
+//   }
+// return products;
 }
 /* GET users listing. */
 router.get('/:status/:page',auth, function(req, res, next) {
