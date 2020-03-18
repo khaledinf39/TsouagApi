@@ -53,7 +53,11 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
       const pw=req.body.password;
       const supplier=new Supplier({
         _id:mongoose.Types.ObjectId(),
-        // email:req.body.email,
+        name:req.body.name,
+        commerce_name:req.body.commerce_name,
+        scour:"00.0",
+        address:req.body.address,
+        email:req.body.email,
         password:pw,
         phone:req.body.phone,
         status:true,
@@ -298,6 +302,30 @@ router.get('/:id',auth, function(req, res, next) {
 router.put('/:id',auth,Bodyparser.json(), function(req, res, next) {
   
   Supplier.findByIdAndUpdate({_id:req.params.id},req.body,{new:true},function(err){
+    if(err){
+      res.status(500).json({
+        status:500,
+        message:err,
+      
+      })
+    }else{
+      res.status(200).json({
+        status:200,
+        message:"update supplier with succesfully",
+      
+      })
+    
+    }
+  })
+
+
+});
+
+//update supplier scour
+router.put('/scour_update/:id/:scour',auth, function(req, res, next) {
+  
+  Supplier.findByIdAndUpdate({_id:req.params.id},
+    {$set:{scour:req.params.scour}},{new:true},function(err){
     if(err){
       res.status(500).json({
         status:500,

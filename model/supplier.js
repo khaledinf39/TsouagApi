@@ -3,6 +3,8 @@ const supplierSchemma=mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     phone:{type :String,required:true ,unique:true},
     email:{type :String,required:false },
+    name:{type :String,required:false },
+    commerce_name:{type :String,required:false },
     FCMtoken:{type: String ,required: true},
     lat:{type: String ,required: true},
     lng:{type: String ,required: true},
@@ -10,7 +12,10 @@ const supplierSchemma=mongoose.Schema({
     status:{type: Boolean ,required: true},
     password:{type: String ,required: true},
     image:{type: String ,required: false}
-    ,storeID:{type: String ,required: true}
+    ,storeID:{type: String ,required: true} 
+    ,address:{type: String ,required: false}
+    ,scour:{type: String ,required: false}
+    ,create_at:{type: Date, required: true, default: Date.now }
 });
 
 module.exports=mongoose.model('Supplier',supplierSchemma);
