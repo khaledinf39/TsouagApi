@@ -14,7 +14,7 @@ const supplierSchemma=mongoose.Schema({
     image:{type: String ,required: false}
     ,storeID:{type: String ,required: true} 
     ,address:{type: String ,required: false}
-    ,scour:{type: String ,required: false}
+    ,scour:{type: Number ,required: false}
     ,create_at:{type: Date, required: true, default: Date.now }
 });
 

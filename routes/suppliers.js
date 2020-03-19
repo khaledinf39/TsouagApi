@@ -55,7 +55,7 @@ router.post('/logup',Bodyparser.json(), function(req, res, next) {
         _id:mongoose.Types.ObjectId(),
         name:req.body.name,
         commerce_name:req.body.commerce_name,
-        scour:"00.0",
+        scour:00,
         address:req.body.address,
         email:req.body.email,
         password:pw,

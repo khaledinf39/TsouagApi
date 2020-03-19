@@ -308,23 +308,11 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
               }
               order_supplier.save().then(result => {
                   console.log(result);
-                  for(let item of products){
                   
-                                  Product.findOneAndUpdate(
-                                      { _id: item._id },
-                                       { $inc: {quantity: +item.quantity } }, 
-                                       {new: true },
-                                       function(err, response) {
-                                      if (err) {
-                                      callback(err);
-                                     }
-                                  }
-                                   );
-                              }
                        
                   res.status(200).json({
                       status: 200,
-                      message: 'order created with successefully',
+                      message: 'Mostatlamat created with successefully',
                       order:[result] 
                   })
               });
@@ -348,10 +336,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   router.put('/:orderid/:status',auth, function(req, res, next) {
     let id=req.params.orderid;
     let status=req.params.status;
-    // const upadteops={};
-    // for (const ops of req.body){
-    //   upadteops[ops.propertyName]=ops.value;
-    // }
+    
     Mostalamat.update(
       {_id: id}
     ,{$set:{status:status}}
@@ -365,11 +350,14 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
         .then(result=>{
           console.log(result);
           if (result){
-            res.status(200).json({
-              status:200,
-              message:' order updated',
-              result:result
+           add_scour(id,status);
+           
+           res.status(200).json({
+            status:200,
+            message:' order updated',
+            result:result
             })
+           
           }else {
             res.status(404).json({
               message:'no data found for this id',
@@ -383,6 +371,58 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   
   });
   
+  function add_scour(id,status){
+if(status==1){
+  return false;
+}
+else{
+  Mostalamat.findOne({_id: id}).exec().then(result1=>{
+    if(result1){
+      console.log(result1);
+    
+    /*******************************************************update scour of supplier */
+let supplierID=result1.userID;
+let total=0;
+if(status==2){
+total=+result1.sub_total;
+  /*************************************update product quantity */
+  var products=result1.products;
+  for(let item of products){
+              
+    Product.findOneAndUpdate(
+        { _id: item._id },
+         { $inc: {quantity: +item.quantity } }, 
+         {new: true },
+         function(err, response) {
+        if (err) {
+        callback(err);
+       }
+    }
+     );
+}
+}
+else{
+total=-result1.sub_total;
+}
+console.log("total   :"+total);
+console.log("status  :"+status);
+Supplier.findOneAndUpdate(
+  { _id: supplierID },
+   { $inc: {scour: +total } }, 
+   {new: true },
+   function(err, response) {
+  if (err) {
+  callback(err);
+ }
+}
+);
+
+    }
+  })
+}
+
+   
+  }
   //delete order
   router.delete('/:orderid',auth, function(req, res, next) {
     const id=req.params.orderid;
