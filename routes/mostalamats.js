@@ -373,7 +373,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   
   function add_scour(id,status){
 if(status==2){
-  
+
   Mostalamat.findOne({_id: id}).exec().then(result1=>{
     if(result1){
       console.log(result1);
@@ -384,21 +384,21 @@ let total=0;
 
 total=+result1.sub_total;
   /*************************************update product quantity */
-  var products=result1.products;
-  for(let item of products){
-              
-    Product.findOneAndUpdate(
-        { _id: item._id },
-         { $inc: {quantity: +item.quantity } }, 
-         {new: true },
-         function(err, response) {
-        if (err) {
-        callback(err);
-       }
+      var products=result1.products;
+      for(let item of products){
+                  
+        Product.findOneAndUpdate(
+            { _id: item._id },
+             { $inc: {quantity: +item.quantity } }, 
+             {new: true },
+             function(err, response) {
+            if (err) {
+            callback(err);
+           }
+        }
+         );
     }
-     );
-}
-}
+
 
 console.log("total   :"+total);
 console.log("status  :"+status);
@@ -414,7 +414,7 @@ Supplier.findOneAndUpdate(
 );
 
     }
-  )
+  })
 }
 
    
