@@ -372,10 +372,8 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   });
   
   function add_scour(id,status){
-if(status==1){
-  return false;
-}
-else{
+if(status==2){
+  
   Mostalamat.findOne({_id: id}).exec().then(result1=>{
     if(result1){
       console.log(result1);
@@ -383,7 +381,7 @@ else{
     /*******************************************************update scour of supplier */
 let supplierID=result1.userID;
 let total=0;
-if(status==2){
+
 total=+result1.sub_total;
   /*************************************update product quantity */
   var products=result1.products;
@@ -401,9 +399,7 @@ total=+result1.sub_total;
      );
 }
 }
-else{
-total=-result1.sub_total;
-}
+
 console.log("total   :"+total);
 console.log("status  :"+status);
 Supplier.findOneAndUpdate(
@@ -418,7 +414,7 @@ Supplier.findOneAndUpdate(
 );
 
     }
-  })
+  )
 }
 
    
