@@ -310,12 +310,12 @@ router.get('/:status/:page',auth, function(req, res, next) {
       /*************************************update product quantity */
           var products=result1.products;
           for(let item of products){
-                  
+               ///quantity   
             Product.findOneAndUpdate(
                 { _id: item._id },
                  { 
                    $inc: {quantity: -item.quantity }
-                 ,$inc: {quantity_sold: +item.quantity } 
+                 
                 }, 
                  {new: true },
                  function(err, response) {
@@ -324,6 +324,20 @@ router.get('/:status/:page',auth, function(req, res, next) {
                }
             }
              );
+
+             ///quantity sold 
+             Product.findOneAndUpdate(
+              { _id: item._id },
+               { 
+                $inc: {quantity_sold: +item.quantity } 
+              }, 
+               {new: true },
+               function(err, response) {
+              if (err) {
+              callback(err);
+             }
+          }
+           );
         }
           if(result1.bayment_type===2){
            const electronique_bayments=new Electronique_bayments({
