@@ -43,6 +43,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
   var perPage = 10
   var page = req.params.page || 1
   Mostalamat.find({status:req.params.status})
+  .sort({create_at:-1})
     .skip((perPage * page) - perPage)
     .limit(perPage)
         .exec()
@@ -89,6 +90,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
   var perPage = 10
   var page = req.params.page || 1
   Mostalamat.find({storeID:req.params.storeID ,status:req.params.status})
+  .sort({create_at:-1})
     .skip((perPage * page) - perPage)
     .limit(perPage)
         .exec()
@@ -134,6 +136,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
     var page = req.params.page || 1
     const id=req.params.orderid;
     Mostalamat.findById(id)
+    .sort({create_at:-1})
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
@@ -176,6 +179,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
     let id=req.params.userid;
     let status=req.params.status;
     Mostalamat.find({userID:id ,  status:status})
+    .sort({create_at:-1})
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
@@ -217,6 +221,7 @@ router.get('/bystore/:storeID/:status/:page',auth, function(req, res, next) {
     let id=req.params.storeId;
     let status=req.params.status;
     Mostalamat.find({storeID:id ,  status:status})
+    .sort({create_at:-1})
     .skip((perPage * page) - perPage)
     .limit(perPage)
          .exec()
