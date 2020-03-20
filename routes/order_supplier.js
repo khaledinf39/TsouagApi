@@ -234,43 +234,8 @@ router.get('/:status/:page',auth, function(req, res, next) {
               }
               order_supplier.save().then(result => {
                   console.log(result);
-                  for(let item of products){
                   
-                                  Product.findOneAndUpdate(
-                                      { _id: item._id },
-                                       { 
-                                         $inc: {quantity: -item.quantity }
-                                       ,$inc: {quantity_sold: +item.quantity } 
-                                      }, 
-                                       {new: true },
-                                       function(err, response) {
-                                      if (err) {
-                                      callback(err);
-                                     }
-                                  }
-                                   );
-                              }
-              
-                  if(req.body.bayment_type===2){
-                   const electronique_bayments=new Electronique_bayments({
-                    _id: new mongoose.Types.ObjectId(),
-                
-                    orderID:result._id,
-                    price:req.body.sub_total
-                    ,storeID:req.body.storeID
-                   })
-              
-                   electronique_bayments.save().then(result => {
-                    if (!result) {
-                     return res.status(404).json({
-                        status: 404,
-                        message: 'error in adding electronique_bayments',
-                        result: result
-                    })
-                   }
-                 
-                });
-                  }            
+                            
                   res.status(200).json({
                       status: 200,
                       message: 'order created with successefully',
@@ -297,10 +262,7 @@ router.get('/:status/:page',auth, function(req, res, next) {
   router.put('/:orderid/:status',auth, function(req, res, next) {
     let id=req.params.orderid;
     let status=req.params.status;
-    // const upadteops={};
-    // for (const ops of req.body){
-    //   upadteops[ops.propertyName]=ops.value;
-    // }
+   
     Order.update(
       {_id: id}
     ,{$set:{status:status}}
@@ -314,6 +276,8 @@ router.get('/:status/:page',auth, function(req, res, next) {
         .then(result=>{
           console.log(result);
           if (result){
+            update_product_quantity(id,status);
+
             res.status(200).json({
               status:200,
               message:' order updated',
@@ -331,7 +295,58 @@ router.get('/:status/:page',auth, function(req, res, next) {
         });
   
   });
-  
+
+  function update_product_quantity(id,status){
+    if(status==2){
+    
+      Order.findOne({_id: id}).exec().then(result1=>{
+        if(result1){
+          console.log(result1);
+        
+      /*************************************update product quantity */
+          var products=result1.products;
+          for(let item of products){
+                  
+            Product.findOneAndUpdate(
+                { _id: item._id },
+                 { 
+                   $inc: {quantity: -item.quantity }
+                 ,$inc: {quantity_sold: +item.quantity } 
+                }, 
+                 {new: true },
+                 function(err, response) {
+                if (err) {
+                callback(err);
+               }
+            }
+             );
+        }
+          if(result1.bayment_type===2){
+           const electronique_bayments=new Electronique_bayments({
+            _id: new mongoose.Types.ObjectId(),
+        
+            orderID:id,
+            price:result1.sub_total
+            ,storeID:result1.storeID
+           })
+      
+           electronique_bayments.save().then(result => {
+            if (!result) {
+             return res.status(404).json({
+                status: 404,
+                message: 'error in adding electronique_bayments',
+                result: result
+            })
+           }
+         
+        });
+          } 
+    
+        }
+      })
+    }
+      
+      }
   //delete order
   router.delete('/:orderid',auth, function(req, res, next) {
     const id=req.params.orderid;
